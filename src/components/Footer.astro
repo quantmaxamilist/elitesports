@@ -1,0 +1,38 @@
+---
+import { site, nav, tel } from '../data/site';
+const year = new Date().getFullYear();
+---
+<footer class="ftr dark">
+  <div class="container grid">
+    <div>
+      <img class="logo" src="/brand/logo-600.png" alt={site.name} width="600" height="173" loading="lazy" />
+      <p class="soft what">{site.what}</p>
+    </div>
+    <nav aria-label="Footer">
+      <p class="label soft">Pages</p>
+      {nav.map((n) => <a href={n.href}>{n.label}</a>)}
+    </nav>
+    <div>
+      <p class="label soft">Contact</p>
+      {site.phone ? <a href={tel(site.phone)}>{site.phone}</a> : <span class="soft">Phone TBC</span>}
+      {site.email ? <a href={`mailto:${site.email}`}>{site.email}</a> : <span class="soft">Email TBC</span>}
+      <a class="btn btn-lime" href="/contact">Get a quote</a>
+    </div>
+  </div>
+  <div class="container base">
+    <span class="soft">© {year} {site.name}</span>
+  </div>
+</footer>
+
+<style>
+  .ftr { padding: 80px 0 32px; border-top: 1px solid var(--line); }
+  .grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 40px; }
+  .logo { width: 260px; height: auto; }
+  .what { margin-top: 12px; }
+  nav, .grid > div:last-child { display: flex; flex-direction: column; gap: 10px; align-items: flex-start; }
+  a:not(.btn) { text-decoration: none; }
+  a:not(.btn):hover { color: var(--lime); }
+  .btn { margin-top: 12px; }
+  .base { margin-top: 64px; padding-top: 24px; border-top: 1px solid var(--line); font-size: var(--fs-small); }
+  @media (max-width: 760px) { .grid { grid-template-columns: minmax(0, 1fr); } .logo { width: 200px; } }
+</style>

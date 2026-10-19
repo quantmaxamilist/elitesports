@@ -1,0 +1,150 @@
+---
+import Base from '../layouts/Base.astro';
+import Enquiry from '../components/Enquiry.astro';
+import { site, stages } from '../data/site';
+const all = stages.flatMap((s) => s.media.map((m) => ({ ...m, stage: s.title })));
+let k = -1;
+---
+<Base title={`Our Work | ${site.name}`} description="Before, during and after: photos and drone footage of a hard court rebuilt as a 3G training pitch.">
+  <section class="ph dark">
+    <video class="bg" muted playsinline loop autoplay preload="auto" poster="/media/video/turf-half.jpg" aria-hidden="true">
+      <source src="/media/video/turf-half-sm.mp4" media="(max-width: 760px)" type="video/mp4" />
+      <source src="/media/video/turf-half.mp4" type="video/mp4" />
+    </video>
+    <div class="container inner">
+      <p class="label lime" data-reveal>Our work</p>
+      <h1 class="display" data-reveal>Hard court to 3G, start to finish.</h1>
+      <nav class="jump" aria-label="Stages" data-reveal>
+        {stages.map((s) => <a href={`#${s.slug}`}><span class="label">{s.n}</span> {s.title}</a>)}
+      </nav>
+    </div>
+  </section>
+
+  {stages.map((s, si) => (
+    <section class={`stg ${si % 2 ? 'alt' : ''}`} id={s.slug}>
+      <div class="container">
+        <header class="sh" data-reveal>
+          <span class="label n">{s.n}</span>
+          <h2 class="display">{s.title}</h2>
+          <p class="soft">{s.text}</p>
+        </header>
+        <ul class={`grid g${Math.min(s.media.length, 6)}`}>
+          {s.media.map((m) => {
+            k++;
+            return (
+              <li data-reveal>
+                <button class="tile" data-lb={k} aria-label={`Open: ${m.alt}`}>
+                  {m.kind === 'video'
+                    ? <video muted playsinline loop preload="none" poster={m.poster} data-autoplay data-src={m.src + '.mp4'} data-src-sm={m.src + '-sm.mp4'}></video>
+                    : <img src={m.sm} alt={m.alt} loading="lazy" width={m.w > m.h ? 1024 : Math.round(1024 * m.w / m.h)} height={m.w > m.h ? Math.round(1024 * m.h / m.w) : 1024} />}
+                  {m.kind === 'video' && <span class="play label">Video</span>}
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+    </section>
+  ))}
+
+  <dialog class="lb" data-lb-dialog aria-label="Media viewer">
+    <div class="lb-stage" data-lb-stage></div>
+    <div class="lb-bar">
+      <span class="label" data-lb-count></span>
+      <span class="lb-cap" data-lb-cap></span>
+      <div class="lb-nav">
+        <button class="label" data-lb-prev aria-label="Previous">Prev</button>
+        <button class="label" data-lb-next aria-label="Next">Next</button>
+        <button class="label" data-lb-close aria-label="Close">Close</button>
+      </div>
+    </div>
+  </dialog>
+  <script type="application/json" id="lb-data" set:html={JSON.stringify(all.map((m) => ({ kind: m.kind, src: m.kind === 'video' ? m.src : m.src, poster: m.kind === 'video' ? m.poster : '', alt: m.alt, stage: m.stage })))} />
+
+  <Enquiry title="Want your ground to look like this?" />
+</Base>
+
+<style>
+  .ph { position: relative; min-height: 78vh; display: flex; align-items: flex-end; overflow: hidden; }
+  .bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.7; }
+  .ph::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(10,13,10,0.5), rgba(10,13,10,0.2) 40%, rgba(10,13,10,0.92)); }
+  .inner { position: relative; z-index: 1; padding-top: calc(var(--header-h) + 48px); padding-bottom: 56px; }
+  h1 { font-size: var(--fs-display-2); margin: 16px 0 32px; max-width: 16ch; }
+  .jump { display: flex; flex-wrap: wrap; gap: 8px; }
+  .jump a { display: inline-flex; gap: 8px; align-items: baseline; padding: 10px 14px; border: 1px solid var(--line); border-radius: 2px; text-decoration: none; background: rgba(10,13,10,0.5); font-weight: 600; transition: background var(--dur-fast), color var(--dur-fast); }
+  .jump a:hover { background: var(--lime); color: var(--ink); }
+  .jump .label { color: var(--lime); }
+  .jump a:hover .label { color: var(--ink); }
+
+  .stg { padding: clamp(64px, 8vw, 120px) 0; background: var(--chalk); scroll-margin-top: var(--header-h); }
+  .stg.alt { background: var(--chalk-2); }
+  .sh { display: grid; grid-template-columns: 56px minmax(0, 1fr); gap: 4px 16px; margin-bottom: 32px; }
+  .sh .n { color: var(--turf-deep); padding-top: 0.6em; grid-row: span 2; }
+  .sh h2 { font-size: var(--fs-display-3); }
+  .grid { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .grid li:first-child { grid-column: span 2; grid-row: span 2; }
+  .tile { position: relative; display: block; width: 100%; height: 100%; min-height: 220px; padding: 0; border: 0; border-radius: var(--radius); overflow: hidden; background: var(--ink); cursor: zoom-in; }
+  .tile img, .tile video { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s var(--ease-out); }
+  .tile:hover img, .tile:hover video { transform: scale(1.03); }
+  .grid li:first-child .tile { aspect-ratio: 16 / 10; }
+  .grid li:not(:first-child) .tile { aspect-ratio: 4 / 3; }
+  .play { position: absolute; left: 12px; bottom: 12px; padding: 6px 9px; background: rgba(10,13,10,0.78); color: var(--lime); border-radius: 2px; }
+
+  .lb { width: 100vw; height: 100dvh; max-width: none; max-height: none; margin: 0; padding: 0; border: 0; background: rgba(10,13,10,0.97); color: var(--text-inv); }
+  .lb::backdrop { background: rgba(10,13,10,0.9); }
+  .lb[open] { display: grid; grid-template-rows: minmax(0, 1fr) auto; }
+  .lb-stage { display: grid; place-items: center; padding: 24px var(--gutter) 0; min-height: 0; }
+  .lb-stage :global(img), .lb-stage :global(video) { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: var(--radius); }
+  .lb-bar { display: flex; align-items: center; gap: 16px; padding: 16px var(--gutter); flex-wrap: wrap; }
+  .lb-cap { flex: 1 1 240px; color: var(--text-inv-soft); font-size: var(--fs-small); }
+  .lb-nav { display: flex; gap: 8px; }
+  .lb-nav button { height: 44px; padding: 0 16px; background: var(--ink-3); border: 1px solid var(--line); border-radius: 2px; }
+  .lb-nav button:hover { background: var(--lime); color: var(--ink); }
+
+  @media (max-width: 760px) {
+    .grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; }
+    .tile { min-height: 0; }
+  }
+</style>
+
+<script>
+  const dlg = document.querySelector<HTMLDialogElement>('[data-lb-dialog]');
+  const dataEl = document.getElementById('lb-data');
+  if (dlg && dataEl) {
+    const items = JSON.parse(dataEl.textContent || '[]') as { kind: string; src: string; poster: string; alt: string; stage: string }[];
+    const stage = dlg.querySelector<HTMLElement>('[data-lb-stage]')!;
+    const cap = dlg.querySelector<HTMLElement>('[data-lb-cap]')!;
+    const count = dlg.querySelector<HTMLElement>('[data-lb-count]')!;
+    const small = matchMedia('(max-width: 760px)').matches;
+    let i = 0;
+    const render = () => {
+      const m = items[i];
+      stage.innerHTML = '';
+      if (m.kind === 'video') {
+        const v = document.createElement('video');
+        Object.assign(v, { muted: true, playsInline: true, loop: true, controls: true, autoplay: true, poster: m.poster });
+        v.src = m.src + (small ? '-sm.mp4' : '.mp4');
+        v.setAttribute('aria-label', m.alt);
+        stage.append(v);
+      } else {
+        const img = new Image();
+        img.src = m.src; img.alt = m.alt;
+        stage.append(img);
+      }
+      cap.textContent = `${m.stage} · ${m.alt}`;
+      count.textContent = `${i + 1} of ${items.length}`;
+    };
+    const close = () => { stage.innerHTML = ''; if (dlg.open) dlg.close(); window.dispatchEvent(new Event('lenis:start')); };
+    document.querySelectorAll<HTMLElement>('[data-lb]').forEach((b) => b.addEventListener('click', () => {
+      i = Number(b.dataset.lb); render(); dlg.showModal(); window.dispatchEvent(new Event('lenis:stop'));
+    }));
+    const step = (d: number) => { i = (i + d + items.length) % items.length; render(); };
+    dlg.querySelector('[data-lb-prev]')!.addEventListener('click', () => step(-1));
+    dlg.querySelector('[data-lb-next]')!.addEventListener('click', () => step(1));
+    dlg.querySelector('[data-lb-close]')!.addEventListener('click', close);
+    dlg.addEventListener('cancel', (e) => { e.preventDefault(); close(); });
+    dlg.addEventListener('close', () => window.dispatchEvent(new Event('lenis:start')));
+    dlg.addEventListener('click', (e) => { if (e.target === dlg || e.target === stage) close(); });
+    dlg.addEventListener('keydown', (e) => { if (e.key === 'ArrowRight') step(1); if (e.key === 'ArrowLeft') step(-1); });
+  }
+</script>

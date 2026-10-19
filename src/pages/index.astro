@@ -1,0 +1,60 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import Transformation from '../components/Transformation.astro';
+import Process from '../components/Process.astro';
+import Enquiry from '../components/Enquiry.astro';
+import { site } from '../data/site';
+---
+<Base title={`${site.name} | 3G Training Pitches`} description={site.intro}>
+  <Hero />
+
+  <section class="intro section">
+    <div class="container grid">
+      <p class="statement" data-reveal>{site.intro}</p>
+      <div class="pair" data-reveal>
+        <figure>
+          <img src="/media/img/img05-sm.jpg" alt="The old wet tarmac court seen through the gate" width="1024" height="768" loading="lazy" />
+          <figcaption class="label">Before</figcaption>
+        </figure>
+        <figure>
+          <img src="/media/img/img13-sm.jpg" alt="Young players running onto the new pitch on opening day" width="1024" height="768" loading="lazy" />
+          <figcaption class="label">After</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <Transformation />
+  <Process />
+
+  <section class="night dark">
+    <img src="/media/img/img10.jpg" alt="The finished pitch under floodlights at night" width="2048" height="1156" loading="lazy" />
+    <div class="container cap">
+      <p class="label lime">05 · Open</p>
+      <h2 class="display">Ready for floodlit training.</h2>
+      <a class="btn btn-ghost" href="/work#open">See the finished pitch</a>
+    </div>
+  </section>
+
+  <Enquiry />
+</Base>
+
+<style>
+  .intro { background: var(--chalk); }
+  .grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(32px, 6vw, 96px); align-items: center; }
+  .statement { font-size: var(--fs-statement); line-height: 1.3; font-weight: 500; text-wrap: pretty; }
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  figure { margin: 0; position: relative; aspect-ratio: 4 / 5; overflow: hidden; border-radius: var(--radius); background: var(--chalk-2); }
+  figure img { width: 100%; height: 100%; object-fit: cover; }
+  figure:last-child img { object-position: 30% 50%; }
+  figcaption { position: absolute; left: 12px; top: 12px; padding: 6px 9px; background: var(--ink); color: var(--chalk); border-radius: 2px; }
+  figure:last-child figcaption { background: var(--lime); color: var(--ink); }
+
+  .night { position: relative; min-height: 86vh; display: flex; align-items: flex-end; overflow: hidden; }
+  .night img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .night::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(10,13,10,0) 40%, rgba(10,13,10,0.85)); }
+  .night .cap { position: relative; z-index: 1; padding-bottom: clamp(48px, 8vw, 96px); }
+  .night h2 { font-size: var(--fs-display-2); margin: 12px 0 28px; max-width: 16ch; }
+  @media (max-width: 900px) { .grid { grid-template-columns: minmax(0, 1fr); } .night { min-height: 70vh; } }
+</style>

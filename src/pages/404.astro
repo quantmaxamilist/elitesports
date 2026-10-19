@@ -1,0 +1,20 @@
+---
+import Base from '../layouts/Base.astro';
+import { site } from '../data/site';
+---
+<Base title={`Page not found | ${site.name}`} description="This page doesn't exist.">
+  <section class="nf dark">
+    <div class="container">
+      <p class="label lime">404</p>
+      <h1 class="display">Off the pitch.</h1>
+      <p class="soft">That page doesn't exist.</p>
+      <div class="a"><a class="btn btn-lime" href="/">Home</a><a class="btn btn-ghost" href="/work">Our work</a></div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .nf { min-height: 100vh; display: flex; align-items: center; padding-top: var(--header-h); }
+  h1 { font-size: var(--fs-display-2); margin: 16px 0; }
+  .a { display: flex; gap: 12px; margin-top: 32px; flex-wrap: wrap; }
+</style>

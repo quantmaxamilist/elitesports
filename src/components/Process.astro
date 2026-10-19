@@ -1,0 +1,104 @@
+---
+import { stages } from '../data/site';
+// First piece of media per stage drives the sticky frame
+const lead = stages.map((s) => s.media[0]);
+---
+<section class="proc section" data-proc>
+  <div class="container">
+    <div class="head" data-reveal>
+      <p class="label soft">How it comes together</p>
+      <h2 class="display">Five stages, <span class="g">one pitch.</span></h2>
+    </div>
+    <div class="grid">
+      <ol class="list">
+        {stages.map((s, i) => (
+          <li class="row" data-proc-row={i}>
+            <span class="n label">{s.n}</span>
+            <div>
+              <h3 class="display">{s.title}</h3>
+              <p class="soft">{s.text}</p>
+              <a class="more" href={`/work#${s.slug}`}>See {s.media.length} {s.media.length === 1 ? 'shot' : 'shots'}</a>
+            </div>
+            <div class="m-inline" aria-hidden="true">
+              {lead[i].kind === 'video'
+                ? <video muted playsinline loop preload="none" poster={lead[i].poster} data-autoplay data-src={lead[i].src + '-sm.mp4'}></video>
+                : <img src={lead[i].sm} alt="" loading="lazy" />}
+            </div>
+          </li>
+        ))}
+      </ol>
+      <div class="frame" aria-hidden="true">
+        {lead.map((m, i) => (
+          <div class={`slide ${i === 0 ? 'on' : ''}`} data-proc-slide={i}>
+            {m.kind === 'video'
+              ? <video muted playsinline loop preload="none" poster={m.poster} data-src={m.src + '.mp4'}></video>
+              : <img src={m.src} alt="" loading="lazy" />}
+            <span class="cap label">{stages[i].n} · {stages[i].title}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .proc { background: var(--chalk); }
+  .head { margin-bottom: clamp(40px, 6vw, 80px); }
+  .head h2 { font-size: var(--fs-display-2); margin-top: 12px; }
+  .g { color: var(--turf-deep); }
+  .grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(32px, 5vw, 80px); }
+  .list { list-style: none; margin: 0; padding: 0; }
+  .row { display: grid; grid-template-columns: 56px minmax(0, 1fr); gap: 0 16px; min-height: 52vh; align-content: center; border-top: 1px solid var(--line-dark); padding: 40px 0; opacity: 0.38; transition: opacity 0.4s var(--ease-out); }
+  .row.on { opacity: 1; }
+  .row:last-child { border-bottom: 1px solid var(--line-dark); }
+  .n { color: var(--turf-deep); padding-top: 0.5em; }
+  .row h3 { font-size: var(--fs-display-3); }
+  .row p { margin-top: 12px; max-width: 34ch; }
+  .more { display: inline-block; margin-top: 16px; font-weight: 600; text-decoration: none; border-bottom: 2px solid var(--turf); padding-bottom: 2px; }
+  .more:hover { color: var(--turf-deep); }
+  .m-inline { display: none; }
+  .frame { position: sticky; top: calc(var(--header-h) + 24px); height: calc(100vh - var(--header-h) - 48px); max-height: 760px; border-radius: var(--radius); overflow: hidden; background: var(--ink); }
+  .slide { position: absolute; inset: 0; opacity: 0; transition: opacity 0.6s var(--ease-out); }
+  .slide.on { opacity: 1; }
+  .slide video, .slide img { width: 100%; height: 100%; object-fit: cover; }
+  .cap { position: absolute; left: 16px; bottom: 16px; padding: 7px 10px; background: rgba(10, 13, 10, 0.78); color: var(--lime); border-radius: 2px; }
+  @media (max-width: 900px) {
+    .grid { grid-template-columns: minmax(0, 1fr); }
+    .frame { display: none; }
+    .row { min-height: 0; opacity: 1; }
+    .m-inline { display: block; grid-column: 1 / -1; margin-top: 20px; aspect-ratio: 16 / 10; overflow: hidden; border-radius: var(--radius); background: var(--ink); }
+    .m-inline video, .m-inline img { width: 100%; height: 100%; object-fit: cover; }
+  }
+</style>
+
+<script>
+  const rows = [...document.querySelectorAll<HTMLElement>('[data-proc-row]')];
+  const slides = [...document.querySelectorAll<HTMLElement>('[data-proc-slide]')];
+  if (rows.length && slides.length && matchMedia('(min-width: 901px)').matches) {
+    let cur = -1;
+    const show = (i: number) => {
+      if (i === cur) return;
+      rows.forEach((r, k) => r.classList.toggle('on', k === i));
+      slides.forEach((s, k) => {
+        s.classList.toggle('on', k === i);
+        const v = s.querySelector('video');
+        if (!v) return;
+        if (k === i) { if (!v.src && v.dataset.src) v.src = v.dataset.src; v.play().catch(() => {}); }
+        else v.pause();
+      });
+      cur = i;
+    };
+    show(0);
+    // Middle band picks the active row; rows never resize
+    const io = new IntersectionObserver((es) => {
+      es.forEach((e) => { if (e.isIntersecting) show(Number((e.target as HTMLElement).dataset.procRow)); });
+    }, { rootMargin: '-48% 0px -48% 0px' });
+    rows.forEach((r) => io.observe(r));
+    // Pause the frame's clip when the whole section is off screen
+    const sec = document.querySelector('[data-proc]');
+    if (sec) new IntersectionObserver(([e]) => {
+      const v = slides[cur]?.querySelector('video');
+      if (v) e.isIntersecting ? v.play().catch(() => {}) : v.pause();
+    }).observe(sec);
+  }
+</script>

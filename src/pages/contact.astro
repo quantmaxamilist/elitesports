@@ -1,0 +1,78 @@
+---
+import Base from '../layouts/Base.astro';
+import { site, surfaces, tel } from '../data/site';
+---
+<Base title={`Contact | ${site.name}`} description={`Get a quote from ${site.name} for a 3G training pitch.`}>
+  <section class="ct dark">
+    <div class="container grid">
+      <div class="side">
+        <p class="label lime" data-reveal>Contact</p>
+        <h1 class="display" data-reveal>Get a quote.</h1>
+        <dl class="details" data-reveal>
+          <div><dt class="label soft">Phone</dt><dd>{site.phone ? <a href={tel(site.phone)}>{site.phone}</a> : <span class="tbc">TBC</span>}</dd></div>
+          <div><dt class="label soft">Email</dt><dd>{site.email ? <a href={`mailto:${site.email}`}>{site.email}</a> : <span class="tbc">TBC</span>}</dd></div>
+          <div><dt class="label soft">Area</dt><dd>{site.area || <span class="tbc">TBC</span>}</dd></div>
+        </dl>
+        <figure class="pic" data-reveal>
+          <img src="/media/img/img07-sm.jpg" alt="Drone view of the court half covered in new turf" width="1024" height="578" loading="lazy" />
+        </figure>
+      </div>
+
+      <!-- TODO: point at a form backend (Formspree or similar) once the owner's email is known -->
+      <form class="form" action="#" method="post" data-reveal>
+        <div class="row2">
+          <label><span class="label">Name</span><input name="name" autocomplete="name" required /></label>
+          <label><span class="label">Organisation</span><input name="organisation" autocomplete="organization" /></label>
+        </div>
+        <div class="row2">
+          <label><span class="label">Email</span><input type="email" name="email" autocomplete="email" required /></label>
+          <label><span class="label">Phone</span><input type="tel" name="phone" autocomplete="tel" /></label>
+        </div>
+        <label><span class="label">Site postcode</span><input name="postcode" autocomplete="postal-code" /></label>
+        <fieldset>
+          <legend class="label">What's there now?</legend>
+          <div class="chips">
+            {surfaces.map((s) => <label class="chip"><input type="radio" name="surface" value={s} /><span>{s}</span></label>)}
+          </div>
+        </fieldset>
+        <label><span class="label">Tell us about the ground</span><textarea name="message" rows="5"></textarea></label>
+        <button class="btn btn-lime" type="submit">Send enquiry</button>
+        <p class="note soft" data-form-note hidden>Thanks. The form isn't connected yet, so nothing was sent.</p>
+      </form>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .ct { padding: calc(var(--header-h) + clamp(48px, 7vw, 104px)) 0 var(--section); min-height: 100vh; }
+  .grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(40px, 6vw, 96px); }
+  h1 { font-size: var(--fs-display-2); margin: 16px 0 40px; }
+  .details { margin: 0; display: grid; gap: 20px; }
+  .details div { border-top: 1px solid var(--line); padding-top: 14px; }
+  dd { margin: 6px 0 0; font-size: var(--fs-statement); font-weight: 500; }
+  dd a { text-decoration: none; } dd a:hover { color: var(--lime); }
+  .tbc { color: var(--text-inv-soft); }
+  .pic { margin: 40px 0 0; border-radius: var(--radius); overflow: hidden; aspect-ratio: 16 / 9; }
+  .pic img { width: 100%; height: 100%; object-fit: cover; }
+  .form { display: grid; gap: 20px; align-content: start; background: var(--ink-2); border: 1px solid var(--line); border-radius: var(--radius); padding: clamp(20px, 3vw, 40px); }
+  .row2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; }
+  label { display: grid; gap: 8px; }
+  input, textarea { width: 100%; font: inherit; color: var(--text-inv); background: var(--ink); border: 1px solid var(--line); border-radius: 2px; padding: 12px 14px; min-height: 48px; }
+  input:focus, textarea:focus { outline: none; border-color: var(--lime); }
+  textarea { resize: vertical; }
+  fieldset { border: 0; margin: 0; padding: 0; display: grid; gap: 10px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip { display: inline-flex; cursor: pointer; }
+  .chip input { position: absolute; opacity: 0; width: 1px; height: 1px; min-height: 0; }
+  .chip span { padding: 10px 14px; border: 1px solid var(--line); border-radius: 2px; font-size: var(--fs-small); transition: background var(--dur-fast), color var(--dur-fast); }
+  .chip input:checked + span { background: var(--lime); color: var(--ink); border-color: var(--lime); }
+  .chip input:focus-visible + span { outline: 2px solid var(--lime); outline-offset: 2px; }
+  .form .btn { justify-self: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: minmax(0, 1fr); } .row2 { grid-template-columns: minmax(0, 1fr); } }
+</style>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>('.form');
+  const note = document.querySelector<HTMLElement>('[data-form-note]');
+  form?.addEventListener('submit', (e) => { e.preventDefault(); if (note) note.hidden = false; });
+</script>

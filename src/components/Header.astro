@@ -1,0 +1,61 @@
+---
+import { site, nav, tel } from '../data/site';
+const path = Astro.url.pathname.replace(/\.html$/, '').replace(/\/$/, '') || '/';
+---
+<header class="hdr" data-header>
+  <div class="bar">
+    <a class="brand" href="/" aria-label={`${site.name} home`}>
+      <img src="/brand/logo-600.png" alt={site.name} width="600" height="173" />
+    </a>
+    <nav class="links" aria-label="Main">
+      {nav.map((n) => <a href={n.href} aria-current={path === n.href ? 'page' : undefined}>{n.label}</a>)}
+    </nav>
+    <div class="cta">
+      {site.phone
+        ? <a class="phone" href={tel(site.phone)}>{site.phone}</a>
+        : <a class="phone tbc" href="/contact" title="Phone number to be supplied">Phone TBC</a>}
+      <a class="btn btn-lime" href="/contact">Get a quote</a>
+    </div>
+    <button class="burger" aria-label="Menu" aria-expanded="false" aria-controls="mnav" data-burger><span></span><span></span></button>
+  </div>
+  <div class="mnav" id="mnav" data-mnav hidden>
+    {nav.map((n) => <a class="display" href={n.href}>{n.label}</a>)}
+    <div class="mcta">
+      <a class="btn btn-lime" href="/contact">Get a quote</a>
+      {site.phone ? <a class="btn btn-ghost" href={tel(site.phone)}>{site.phone}</a> : <span class="label soft">Phone TBC</span>}
+    </div>
+  </div>
+</header>
+
+<style>
+  .hdr { position: fixed; inset: 0 0 auto; z-index: var(--z-header); color: var(--text-inv); transition: transform 0.4s var(--ease-out); }
+  .bar {
+    height: var(--header-h); display: flex; align-items: center; gap: 24px;
+    padding: 0 var(--gutter); background: rgba(10, 13, 10, 0.86);
+    border-bottom: 1px solid var(--line);
+  }
+  :global(.hdr-hidden) .hdr { transform: translate3d(0, -100%, 0); }
+  .brand { flex: none; display: block; }
+  .brand img { height: 52px; width: auto; }
+  .links { display: flex; gap: 28px; margin-left: auto; }
+  .links a, .phone { position: relative; text-decoration: none; font-size: 0.9375rem; font-weight: 500; line-height: 48px; }
+  .links a::after, .phone::after { content: ''; position: absolute; left: 0; right: 0; bottom: 10px; height: 2px; background: var(--lime); transform: scaleX(0); transform-origin: left; transition: transform 0.3s var(--ease-out); }
+  .links a:hover::after, .links a[aria-current]::after, .phone:hover::after { transform: scaleX(1); }
+  .cta { display: flex; align-items: center; gap: 20px; }
+  .phone { font-family: var(--font-mono); font-size: 0.875rem; }
+  .phone.tbc { color: var(--text-inv-soft); }
+  .burger { display: none; margin-left: auto; width: 48px; height: 48px; background: none; border: 0; position: relative; }
+  .burger span { position: absolute; left: 12px; right: 12px; height: 2px; background: currentColor; transition: transform 0.3s var(--ease-out); }
+  .burger span:first-child { top: 19px; } .burger span:last-child { top: 27px; }
+  .burger[aria-expanded='true'] span:first-child { transform: translateY(4px) rotate(45deg); }
+  .burger[aria-expanded='true'] span:last-child { transform: translateY(-4px) rotate(-45deg); }
+  .mnav { position: fixed; inset: var(--header-h) 0 0; background: var(--ink); padding: 32px var(--gutter); display: flex; flex-direction: column; gap: 8px; }
+  .mnav[hidden] { display: none; }
+  .mnav > a { font-size: var(--fs-display-3); text-decoration: none; padding: 8px 0; border-bottom: 1px solid var(--line); }
+  .mcta { margin-top: auto; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+  @media (max-width: 900px) {
+    .links, .cta { display: none; }
+    .burger { display: block; }
+    .brand img { height: 40px; }
+  }
+</style>

@@ -1,0 +1,57 @@
+---
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { site } from '../data/site';
+
+interface Props { title: string; description: string; dark?: boolean }
+const { title, description } = Astro.props;
+const canonical = new URL(Astro.url.pathname.replace(/\.html$/, ''), Astro.site);
+---
+<!doctype html>
+<html lang="en-GB">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={new URL('/media/video/finished-aerial.jpg', Astro.site)} />
+    <meta property="og:type" content="website" />
+    <meta name="theme-color" content="#0a0d0a" />
+    <link rel="icon" href="/brand/favicon.png" type="image/png" />
+    <script is:inline>document.documentElement.classList.add('js');</script>
+    <script type="application/ld+json" set:html={JSON.stringify({
+      '@context': 'https://schema.org', '@type': 'LocalBusiness', name: site.name,
+      description: site.intro, url: Astro.site?.toString(),
+      ...(site.phone ? { telephone: site.phone } : {}), ...(site.email ? { email: site.email } : {}),
+    })} />
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <Header />
+    <main id="main"><slot /></main>
+    <Footer />
+    <div class="cursor" aria-hidden="true"><span class="ring"></span><span class="dot"></span></div>
+    <div class="pt" aria-hidden="true"></div>
+    <script>import '../scripts/core.js';</script>
+  </body>
+</html>
+
+<style>
+  .skip { position: absolute; left: 12px; top: -60px; z-index: 200; background: var(--lime); color: var(--ink); padding: 10px 14px; }
+  .skip:focus { top: 12px; }
+  .cursor { position: fixed; inset: 0 auto auto 0; z-index: var(--z-cursor); pointer-events: none; opacity: 0; transition: opacity 0.3s; }
+  :global(.has-cursor) .cursor { opacity: 1; }
+  .cursor .ring, .cursor .dot { position: absolute; left: 0; top: 0; border-radius: 50%; will-change: transform; }
+  .cursor .ring { width: 24px; height: 24px; margin: -12px 0 0 -12px; border: 1.5px solid var(--lime); transition: width 0.25s var(--ease-out), height 0.25s var(--ease-out), margin 0.25s var(--ease-out), background 0.25s; mix-blend-mode: difference; }
+  .cursor .dot { width: 6px; height: 6px; margin: -3px 0 0 -3px; background: var(--lime); }
+  :global(.cursor-hover) .cursor .ring { width: 40px; height: 40px; margin: -20px 0 0 -20px; background: rgba(140, 224, 74, 0.12); }
+  @media (hover: none), (pointer: coarse) { .cursor { display: none; } }
+  /* Starts covering the page; core.js slides it away (and back in on navigation) */
+  .pt { position: fixed; inset: 0; z-index: var(--z-transition); background: var(--ink); pointer-events: none; }
+  :global(html:not(.js)) .pt { display: none; }
+  @media (prefers-reduced-motion: reduce) { .pt { display: none; } }
+</style>

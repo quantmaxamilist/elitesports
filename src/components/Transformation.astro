@@ -1,0 +1,176 @@
+---
+import { stages } from '../data/site';
+---
+<section class="tx dark" id="transformation" data-tx>
+  <div class="container">
+    <div class="head">
+      <p class="label lime">The transformation</p>
+      <h2 class="display">Before. <span class="lime">After.</span></h2>
+    </div>
+
+    <div class="stage" data-tx-stage style="--p:0">
+      <video class="v before" muted playsinline loop preload="metadata" poster="/media/video/before-overhead.jpg" aria-label="Before: the old tarmac court from above"
+        data-src="/media/video/before-overhead.mp4" data-src-sm="/media/video/before-overhead-sm.mp4"></video>
+      <div class="after" data-tx-after>
+        <div class="after-in" data-tx-after-in>
+          <video class="v" muted playsinline loop preload="metadata" poster="/media/video/finished-pingpong.jpg" aria-label="After: the finished 3G pitch from the air"
+            data-src="/media/video/finished-pingpong.mp4" data-src-sm="/media/video/finished-pingpong-sm.mp4"></video>
+        </div>
+      </div>
+      <div class="sweep" data-tx-sweep aria-hidden="true"><i></i></div>
+      <div class="line" data-tx-line aria-hidden="true"></div>
+      <span class="tag tag-b label" data-tx-end>Before</span>
+      <span class="tag tag-a label" data-tx-end>After</span>
+      <button class="handle" data-tx-handle data-tx-end role="slider" aria-label="Compare before and after" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50" aria-valuetext="Percent of the after view shown">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l-6 6 6 6M15 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+      </button>
+      <button class="replay label" data-tx-replay data-tx-end>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v4h4" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+        Replay
+      </button>
+    </div>
+
+    <ol class="steps" data-tx-steps>
+      {stages.map((s) => (
+        <li><a href={`/work#${s.slug}`}><span class="label lime">{s.n}</span><span class="t">{s.title}</span></a></li>
+      ))}
+    </ol>
+  </div>
+</section>
+
+<style>
+  .tx { padding: clamp(64px, 8vw, 120px) 0; position: relative; }
+  .head { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-bottom: 32px; flex-wrap: wrap; }
+  .head h2 { font-size: var(--fs-display-2); }
+  .stage {
+    position: relative; aspect-ratio: 16 / 9; max-height: min(calc(100vh - 250px), 760px); width: 100%;
+    overflow: hidden; border-radius: var(--radius); background: var(--ink-2);
+    touch-action: pan-y; user-select: none; cursor: ew-resize;
+  }
+  .v { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .before { filter: saturate(0.75) brightness(0.92); }
+  /* Reveal with transforms only: the wrapper slides in from the left, the inner layer counter-slides */
+  .after, .after-in { position: absolute; inset: 0; overflow: hidden; will-change: transform; }
+  .after { transform: translate3d(calc((1 - var(--p)) * 100%), 0, 0); }
+  .after-in { transform: translate3d(calc((var(--p) - 1) * 100%), 0, 0); }
+  /* Zoom the oblique aerial onto the pitch itself */
+  .after-in .v { transform: scale(1.55); transform-origin: 0% 100%; }
+  .sweep {
+    position: absolute; top: -10%; bottom: -10%; left: 0; width: 22%;
+    transform: translate3d(calc((1 - var(--p)) * var(--w, 1000px) - 30%), 0, 0) skewX(-16deg);
+    pointer-events: none; will-change: transform, opacity;
+  }
+  .sweep i {
+    position: absolute; inset: 0;
+    background: linear-gradient(270deg, rgba(140, 224, 74, 0) 0%, rgba(140, 224, 74, 0.35) 45%, var(--lime) 66%, #fff 68%, #fff 69.5%, var(--turf) 71.5%, rgba(76, 176, 24, 0) 100%);
+  }
+  .line { position: absolute; top: 0; bottom: 0; left: 0; width: 2px; margin-left: -1px; background: #fff; transform: translate3d(calc((1 - var(--p)) * var(--w, 1000px)), 0, 0); opacity: 0; box-shadow: 0 0 0 1px rgba(0,0,0,0.15); }
+  .tag { position: absolute; top: 16px; padding: 7px 10px; background: rgba(10, 13, 10, 0.78); border-radius: 2px; }
+  .tag-b { left: 16px; } .tag-a { right: 16px; color: var(--lime); }
+  .handle {
+    position: absolute; top: 50%; left: 0; width: 52px; height: 52px; margin: -26px 0 0 -26px; border-radius: 50%;
+    border: 0; background: var(--lime); color: var(--ink); display: grid; place-items: center;
+    transform: translate3d(calc((1 - var(--p)) * var(--w, 1000px)), 0, 0); box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
+  }
+  .handle svg { width: 22px; height: 22px; }
+  .replay { position: absolute; right: 16px; bottom: 16px; display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 14px; background: rgba(10, 13, 10, 0.78); border: 1px solid var(--line); border-radius: 2px; color: var(--text-inv); }
+  .replay svg { width: 16px; height: 16px; }
+  :global(.js) [data-tx-end] { opacity: 0; pointer-events: none; transition: opacity 0.5s var(--ease-out); }
+  :global(.js) .done [data-tx-end] { opacity: 1; pointer-events: auto; }
+  :global(.js) .done .line { opacity: 1; }
+
+  .steps { list-style: none; margin: 24px 0 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+  .steps li { background: var(--ink); }
+  .steps a { display: flex; flex-direction: column; gap: 6px; padding: 18px 20px; text-decoration: none; transition: background var(--dur-fast); }
+  .steps a:hover { background: var(--ink-3); }
+  .steps .t { font-family: var(--font-display); font-weight: 800; font-stretch: 112%; font-style: italic; text-transform: uppercase; font-size: 1.0625rem; }
+  :global(.js) .steps { opacity: 0; transition: opacity 0.6s var(--ease-out) 0.15s; }
+  :global(.js) .tx.played .steps { opacity: 1; }
+  @media (max-width: 760px) {
+    .stage { aspect-ratio: 4 / 5; max-height: none; }
+    .after-in .v { transform: scale(1.35); transform-origin: 60% 100%; object-position: 22% 50%; }
+    .steps { grid-template-columns: minmax(0, 1fr); }
+    .steps a { flex-direction: row; align-items: baseline; gap: 14px; padding: 14px 16px; }
+  }
+</style>
+
+<script>
+  import gsap from 'gsap';
+
+  const root = document.querySelector<HTMLElement>('[data-tx]');
+  if (root) {
+    const stage = root.querySelector<HTMLElement>('[data-tx-stage]')!;
+    const sweep = root.querySelector<HTMLElement>('[data-tx-sweep]')!;
+    const handle = root.querySelector<HTMLButtonElement>('[data-tx-handle]')!;
+    const replay = root.querySelector<HTMLButtonElement>('[data-tx-replay]')!;
+    const vids = [...stage.querySelectorAll('video')];
+    const small = matchMedia('(max-width: 760px)').matches;
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const state = { p: 0 };
+    let tl: gsap.core.Timeline | null = null;
+    let loaded = false;
+
+    const setW = () => stage.style.setProperty('--w', stage.clientWidth + 'px');
+    const apply = () => {
+      stage.style.setProperty('--p', state.p.toFixed(4));
+      handle.setAttribute('aria-valuenow', String(Math.round(state.p * 100)));
+    };
+    setW();
+    new ResizeObserver(setW).observe(stage);
+
+    const load = () => {
+      if (loaded) return;
+      loaded = true;
+      vids.forEach((v) => { v.src = (small ? v.dataset.srcSm : v.dataset.src) || ''; });
+    };
+    const play = () => vids.forEach((v) => v.play().catch(() => {}));
+    const pause = () => vids.forEach((v) => v.pause());
+
+    const finish = () => { stage.classList.add('done'); root.classList.add('played'); };
+    const run = () => {
+      tl?.kill();
+      stage.classList.remove('done');
+      state.p = 0; apply();
+      if (reduce) { state.p = 0.5; apply(); gsap.set(sweep, { opacity: 0 }); finish(); return; }
+      gsap.set(sweep, { opacity: 1 });
+      tl = gsap.timeline({ onUpdate: apply, onComplete: finish })
+        .to(state, { p: 1, duration: 1.5, ease: 'power3.inOut' }, 0.5)
+        .to(state, { p: 0.5, duration: 0.9, ease: 'power3.inOut' }, 2.6)
+        .to(sweep, { opacity: 0, duration: 0.4 }, 3.1);
+    };
+
+    let started = false;
+    new IntersectionObserver((es) => {
+      es.forEach((e) => {
+        if (e.isIntersecting) { load(); play(); if (!started) { started = true; run(); } else tl?.resume(); }
+        else { pause(); tl?.pause(); }
+      });
+    }, { threshold: 0.5 }).observe(stage);
+    // Fetch early so the clip is ready when the section arrives
+    new IntersectionObserver((es, o) => { if (es[0].isIntersecting) { load(); o.disconnect(); } }, { rootMargin: '100% 0px' }).observe(stage);
+
+    replay.addEventListener('click', (e) => { e.stopPropagation(); run(); });
+
+    // Drag to compare once the sweep has finished
+    let dragging = false;
+    const toP = (x: number) => {
+      const r = stage.getBoundingClientRect();
+      state.p = Math.min(1, Math.max(0, 1 - (x - r.left) / r.width)); apply();
+    };
+    stage.addEventListener('pointerdown', (e) => {
+      if ((e.target as HTMLElement).closest('[data-tx-replay]')) return;
+      tl?.progress(1); tl?.kill(); finish(); gsap.set(sweep, { opacity: 0 });
+      dragging = true; stage.setPointerCapture(e.pointerId); toP(e.clientX);
+    });
+    stage.addEventListener('pointermove', (e) => { if (dragging) toP(e.clientX); });
+    const stop = () => { dragging = false; };
+    stage.addEventListener('pointerup', stop);
+    stage.addEventListener('pointercancel', stop);
+    handle.addEventListener('keydown', (e) => {
+      const d = e.key === 'ArrowLeft' ? 0.05 : e.key === 'ArrowRight' ? -0.05 : 0;
+      if (!d) return;
+      e.preventDefault(); tl?.kill(); finish();
+      state.p = Math.min(1, Math.max(0, state.p + d)); apply();
+    });
+  }
+</script>
