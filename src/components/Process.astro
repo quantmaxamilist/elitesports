@@ -1,7 +1,7 @@
 ---
 import { stages } from '../data/site';
-// First piece of media per stage drives the sticky frame
-const lead = stages.map((s) => s.media[0]);
+// Each stage's chosen homepage item drives the sticky frame
+const lead = stages.map((s) => s.media[s.home ?? 0]);
 ---
 <section class="proc section" data-proc>
   <div class="container">
@@ -22,7 +22,7 @@ const lead = stages.map((s) => s.media[0]);
             <div class="m-inline" aria-hidden="true">
               {lead[i].kind === 'video'
                 ? <video muted playsinline loop preload="none" poster={lead[i].poster} data-autoplay data-src={lead[i].src + '-sm.mp4'}></video>
-                : <img src={lead[i].sm} alt="" loading="lazy" />}
+                : <img src={lead[i].sm} alt="" loading="lazy" style={lead[i].pos ? `object-position:${lead[i].pos}` : undefined} />}
             </div>
           </li>
         ))}
@@ -32,7 +32,7 @@ const lead = stages.map((s) => s.media[0]);
           <div class={`slide ${i === 0 ? 'on' : ''}`} data-proc-slide={i}>
             {m.kind === 'video'
               ? <video muted playsinline loop preload="none" poster={m.poster} data-src={m.src + '.mp4'}></video>
-              : <img src={m.src} alt="" loading="lazy" />}
+              : <img src={m.src} alt="" loading="lazy" style={m.pos ? `object-position:${m.pos}` : undefined} />}
             <span class="cap label">{stages[i].n} · {stages[i].title}</span>
           </div>
         ))}
@@ -46,7 +46,7 @@ const lead = stages.map((s) => s.media[0]);
   .head { margin-bottom: clamp(40px, 6vw, 80px); }
   .head h2 { font-size: var(--fs-display-2); margin-top: 12px; }
   .g { color: var(--turf-deep); }
-  .grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(32px, 5vw, 80px); }
+  .grid { --gap: clamp(32px, 5vw, 80px); container-type: inline-size; display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: var(--gap); }
   .list { list-style: none; margin: 0; padding: 0; }
   .row { display: grid; grid-template-columns: 56px minmax(0, 1fr); gap: 0 16px; min-height: 52vh; align-content: center; border-top: 1px solid var(--line-dark); padding: 40px 0; opacity: 0.38; transition: opacity 0.4s var(--ease-out); }
   .row.on { opacity: 1; }
@@ -57,7 +57,9 @@ const lead = stages.map((s) => s.media[0]);
   .more { display: inline-block; margin-top: 16px; font-weight: 600; text-decoration: none; border-bottom: 2px solid var(--turf); padding-bottom: 2px; }
   .more:hover { color: var(--turf-deep); }
   .m-inline { display: none; }
-  .frame { position: sticky; top: calc(var(--header-h) + 24px); height: calc(100vh - var(--header-h) - 48px); max-height: 760px; border-radius: var(--radius); overflow: hidden; background: var(--ink); }
+  /* Landscape frame, centred in the space under the header: its height is 7/12 of the grid
+     (less the gap) at 16:10, so half of it is that width x 0.3125 x 7/12 */
+  .frame { position: sticky; top: max(calc(var(--header-h) + 16px), calc((100vh + var(--header-h)) / 2 - (100cqw - var(--gap)) * 0.18229)); align-self: start; aspect-ratio: 16 / 10; max-height: calc(100vh - var(--header-h) - 32px); border-radius: var(--radius); overflow: hidden; background: var(--ink); }
   .slide { position: absolute; inset: 0; opacity: 0; transition: opacity 0.6s var(--ease-out); }
   .slide.on { opacity: 1; }
   .slide video, .slide img { width: 100%; height: 100%; object-fit: cover; }

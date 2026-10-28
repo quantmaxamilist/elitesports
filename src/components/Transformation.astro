@@ -1,20 +1,21 @@
 ---
-import { stages } from '../data/site';
+import { site, stages } from '../data/site';
 ---
 <section class="tx dark" id="transformation" data-tx>
   <div class="container">
     <div class="head">
-      <p class="label lime">The transformation</p>
+      <p class="label lime">{site.community}</p>
       <h2 class="display">Before. <span class="lime">After.</span></h2>
     </div>
 
     <div class="stage" data-tx-stage style="--p:0">
-      <video class="v before" muted playsinline loop preload="metadata" poster="/media/video/before-overhead.jpg" aria-label="Before: the old tarmac court from above"
-        data-src="/media/video/before-overhead.mp4" data-src-sm="/media/video/before-overhead-sm.mp4"></video>
+      <!-- Gates to the venue: the old wet tarmac court, then the same gates on opening day -->
+      <img class="v before" src="/media/img/img05.jpg" srcset="/media/img/img05-sm.jpg 1024w, /media/img/img05.jpg 2048w" sizes="100vw"
+        alt="Before: the gates to the old wet tarmac court" width="2048" height="1536" decoding="async" draggable="false" />
       <div class="after" data-tx-after>
         <div class="after-in" data-tx-after-in>
-          <video class="v" muted playsinline loop preload="metadata" poster="/media/video/finished-pingpong.jpg" aria-label="After: the finished 3G pitch from the air"
-            data-src="/media/video/finished-pingpong.mp4" data-src-sm="/media/video/finished-pingpong-sm.mp4"></video>
+          <img class="v after-img" src="/media/img/img13.jpg" srcset="/media/img/img13-sm.jpg 1024w, /media/img/img13.jpg 1600w" sizes="100vw"
+            alt="After: young players running through the gates onto the new 3G pitch on opening day" width="1600" height="1200" decoding="async" draggable="false" />
         </div>
       </div>
       <div class="sweep" data-tx-sweep aria-hidden="true"><i></i></div>
@@ -48,13 +49,12 @@ import { stages } from '../data/site';
     touch-action: pan-y; user-select: none; cursor: ew-resize;
   }
   .v { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-  .before { filter: saturate(0.75) brightness(0.92); }
+  .before { object-position: 30% 58%; filter: saturate(0.8) brightness(0.95); }
+  .after-img { object-position: 50% 42%; }
   /* Reveal with transforms only: the wrapper slides in from the left, the inner layer counter-slides */
   .after, .after-in { position: absolute; inset: 0; overflow: hidden; will-change: transform; }
   .after { transform: translate3d(calc((1 - var(--p)) * 100%), 0, 0); }
   .after-in { transform: translate3d(calc((var(--p) - 1) * 100%), 0, 0); }
-  /* Zoom the oblique aerial onto the pitch itself */
-  .after-in .v { transform: scale(1.55); transform-origin: 0% 100%; }
   .sweep {
     position: absolute; top: -10%; bottom: -10%; left: 0; width: 22%;
     transform: translate3d(calc((1 - var(--p)) * var(--w, 1000px) - 30%), 0, 0) skewX(-16deg);
@@ -88,7 +88,8 @@ import { stages } from '../data/site';
   :global(.js) .tx.played .steps { opacity: 1; }
   @media (max-width: 760px) {
     .stage { aspect-ratio: 4 / 5; max-height: none; }
-    .after-in .v { transform: scale(1.35); transform-origin: 60% 100%; object-position: 22% 50%; }
+    .before { object-position: 16% 50%; }
+    .after-img { object-position: 64% 50%; }
     .steps { grid-template-columns: minmax(0, 1fr); }
     .steps a { flex-direction: row; align-items: baseline; gap: 14px; padding: 14px 16px; }
   }

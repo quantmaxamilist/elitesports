@@ -10,4 +10,6 @@ export default defineConfig({
   scopedStyleStrategy: 'class',
   prefetch: { prefetchAll: true, defaultStrategy: 'hover' },
   integrations: [sitemap({ filter: (p) => !p.includes('/404') })],
+  // The dev toolbar floats over the hero's chapter tags on phone widths during review
+  devToolbar: { enabled: false },
 });

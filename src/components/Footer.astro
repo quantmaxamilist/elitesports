@@ -6,7 +6,6 @@ const year = new Date().getFullYear();
   <div class="container grid">
     <div>
       <img class="logo" src="/brand/logo-600.png" alt={site.name} width="600" height="173" loading="lazy" />
-      <p class="soft what">{site.what}</p>
     </div>
     <nav aria-label="Footer">
       <p class="label soft">Pages</p>
@@ -28,7 +27,6 @@ const year = new Date().getFullYear();
   .ftr { padding: 80px 0 32px; border-top: 1px solid var(--line); }
   .grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 40px; }
   .logo { width: 260px; height: auto; }
-  .what { margin-top: 12px; }
   nav, .grid > div:last-child { display: flex; flex-direction: column; gap: 10px; align-items: flex-start; }
   a:not(.btn) { text-decoration: none; }
   a:not(.btn):hover { color: var(--lime); }
